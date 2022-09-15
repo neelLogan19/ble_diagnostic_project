@@ -31,12 +31,15 @@ class _HomePageState extends State<HomePage> {
   //this hashset is used to filter out dupliate devices
   final hs = HashSet<String>();
 
+  //this is the real data, byte array conversion to json data
   var decoded;
 
+  //-->used to fetch data from the ble device
   late QualifiedCharacteristic _rxCharacteristic;
 
   // if there is no device available after scanning we print this message
   String _deviceMsg = "";
+
   //--> when are scanning is completed and we have all the devie in the list this variable is set to true
   bool _foundDeviceWaitingToConnect = false;
 
@@ -86,7 +89,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void performTask(dev) async {
+  //this function is used to convert byte array to json data
+  void retrieveData(dev) async {
     final characteristic = QualifiedCharacteristic(
         serviceId: serviceUuid,
         characteristicId: characteristicUuid,
@@ -98,9 +102,8 @@ class _HomePageState extends State<HomePage> {
     print(decoded);
   }
 
+//-----> this function is used to connect to ble device
   void _connectToDevice(deviceIde) {
-    // We're done scanning, we can cancel it
-    _scanStream.cancel();
     // Let's listen to our connection so we can make updates on a state change
     Stream<ConnectionStateUpdate> _currentConnectionStream = flutterReactiveBle
         .connectToAdvertisingDevice(
@@ -121,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                 serviceId: serviceUuid,
                 characteristicId: characteristicUuid,
                 deviceId: deviceIde);
-            performTask(deviceIde);
+            retrieveData(deviceIde);
             setState(() {
               // _foundDeviceWaitingToConnect = false;
               _connected = true;
