@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:ble_project1/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'dart:async'; // support for async programming with classes such as future and stream
@@ -31,6 +32,8 @@ class _HomePageState extends State<HomePage> {
   //this hashset is used to filter out dupliate devices
   final hs = HashSet<String>();
 
+  //decoded value
+  String decodedByteArray = "";
   //this is the real data, byte array conversion to json data
   var decoded;
 
@@ -64,26 +67,27 @@ class _HomePageState extends State<HomePage> {
     }
 // Main scanning logic happens here -->here we add all devices into a list so that we can display it late
     if (permGranted) {
-      _scanStream = flutterReactiveBle
-          .scanForDevices(withServices: [serviceUuid]).listen((device) {
+      _scanStream =
+          flutterReactiveBle.scanForDevices(withServices: []).listen((device) {
         //code for handling results
         String res = device.name.toString();
         if (!hs.contains(res)) {
           devicesList.add(device);
           hs.add(res);
         }
-
+        print("scan started");
         // print(hm);
         // print(device);
         setState(() {
           _foundDeviceWaitingToConnect = true;
+          _scanStarted = false;
         });
       }, onError: (ErrorDescription) {
         //code for handling error
         // print(ErrorDescription);
       });
 
-      Timer(Duration(seconds: 2), () {
+      Timer(const Duration(seconds: 4), () {
         _scanStream.cancel();
       });
     }
@@ -99,7 +103,13 @@ class _HomePageState extends State<HomePage> {
         await flutterReactiveBle.readCharacteristic(characteristic);
     decoded = utf8.decode(response);
     print(response);
-    print(decoded);
+    print(decoded.toString());
+    if (decoded.toString().length > 0) {
+      Navigator.pushNamed(context, MyRoutes.dataPage);
+    }
+    setState(() {
+      decodedByteArray = decoded.toString();
+    });
   }
 
 //-----> this function is used to connect to ble device
@@ -124,7 +134,10 @@ class _HomePageState extends State<HomePage> {
                 serviceId: serviceUuid,
                 characteristicId: characteristicUuid,
                 deviceId: deviceIde);
+
             retrieveData(deviceIde);
+            print(decodedByteArray);
+
             setState(() {
               // _foundDeviceWaitingToConnect = false;
               _connected = true;
@@ -172,7 +185,10 @@ class _HomePageState extends State<HomePage> {
                 },
               )
             : Center(
-                child: Text("no device found"),
+                child: Text(
+                  "No device found",
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
       ),
       floatingActionButton: Wrap(
@@ -184,13 +200,13 @@ class _HomePageState extends State<HomePage> {
                   child: FloatingActionButton(
                     backgroundColor: Colors.blue,
                     child: const Icon(Icons.search),
-                    onPressed: () {},
+                    onPressed: _startScan,
                   ),
                 )
               : Container(
                   margin: const EdgeInsets.all(10),
                   child: FloatingActionButton(
-                    backgroundColor: Colors.grey,
+                    backgroundColor: Colors.blue,
                     child: Icon(Icons.search),
                     onPressed: _startScan,
                   ),
