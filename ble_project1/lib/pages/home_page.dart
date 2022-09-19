@@ -1,6 +1,7 @@
 import 'dart:collection';
-import 'dart:convert';
 
+
+import 'package:ble_project1/pages/data_page.dart';
 import 'package:ble_project1/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
@@ -35,7 +36,7 @@ class _HomePageState extends State<HomePage> {
   //decoded value
   String decodedByteArray = "";
   //this is the real data, byte array conversion to json data
-  var decoded;
+ 
 
   //-->used to fetch data from the ble device
   late QualifiedCharacteristic _rxCharacteristic;
@@ -93,27 +94,10 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  //this function is used to convert byte array to json data
-  void retrieveData(dev) async {
-    final characteristic = QualifiedCharacteristic(
-        serviceId: serviceUuid,
-        characteristicId: characteristicUuid,
-        deviceId: dev);
-    final response =
-        await flutterReactiveBle.readCharacteristic(characteristic);
-    decoded = utf8.decode(response);
-    print(response);
-    print(decoded.toString());
-    if (decoded.toString().length > 0) {
-      Navigator.pushNamed(context, MyRoutes.dataPage);
-    }
-    setState(() {
-      decodedByteArray = decoded.toString();
-    });
-  }
+ 
 
 //-----> this function is used to connect to ble device
-  void _connectToDevice(deviceIde) {
+  void _connectToDevice(deviceIde, devName) {
     // Let's listen to our connection so we can make updates on a state change
     Stream<ConnectionStateUpdate> _currentConnectionStream = flutterReactiveBle
         .connectToAdvertisingDevice(
@@ -130,12 +114,15 @@ class _HomePageState extends State<HomePage> {
                 characteristicId: characteristicUuid,
                 deviceId: event.deviceId);
             print("good to go");
+            String nm = devName.toString();
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => DataPage(name: nm, id: deviceIde)));
             final characteristic = QualifiedCharacteristic(
                 serviceId: serviceUuid,
                 characteristicId: characteristicUuid,
                 deviceId: deviceIde);
 
-            retrieveData(deviceIde);
+            // retrieveData(deviceIde);
             print(decodedByteArray);
 
             setState(() {
@@ -178,7 +165,8 @@ class _HomePageState extends State<HomePage> {
                       subtitle: Text(devicesList[index].id),
                       trailing: Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        _connectToDevice(devicesList[index].id);
+                        _connectToDevice(
+                            devicesList[index].id, devicesList[index].name);
                       },
                     ),
                   );

@@ -19,9 +19,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      // home: HomePage(),
+      initialRoute: MyRoutes.HomePage,
       routes:{
-        MyRoutes.dataPage:(context) => DataPage()
+        MyRoutes.HomePage:(context) => HomePage(),
       }
     );
   }
