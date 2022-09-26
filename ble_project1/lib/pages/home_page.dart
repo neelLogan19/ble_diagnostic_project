@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-
 import 'package:ble_project1/pages/data_page.dart';
 import 'package:ble_project1/utils/routes.dart';
 import 'package:flutter/material.dart';
@@ -33,13 +32,19 @@ class _HomePageState extends State<HomePage> {
   //this hashset is used to filter out dupliate devices
   final hs = HashSet<String>();
 
+  //loader
+  bool loader = false;
+  bool search = true;
+
   //decoded value
   String decodedByteArray = "";
   //this is the real data, byte array conversion to json data
- 
 
   //-->used to fetch data from the ble device
   late QualifiedCharacteristic _rxCharacteristic;
+
+  //connetion state stream
+  late StreamSubscription<ConnectionStateUpdate> _connection;
 
   // if there is no device available after scanning we print this message
   String _deviceMsg = "";
@@ -94,8 +99,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
- 
-
 //-----> this function is used to connect to ble device
   void _connectToDevice(deviceIde, devName) {
     // Let's listen to our connection so we can make updates on a state change
@@ -104,7 +107,7 @@ class _HomePageState extends State<HomePage> {
             id: deviceIde,
             prescanDuration: const Duration(seconds: 1),
             withServices: [serviceUuid, characteristicUuid]);
-    _currentConnectionStream.listen((event) {
+    _connection = _currentConnectionStream.listen((event) {
       switch (event.connectionState) {
         // We're connected and good to go!
         case DeviceConnectionState.connected:
@@ -114,9 +117,19 @@ class _HomePageState extends State<HomePage> {
                 characteristicId: characteristicUuid,
                 deviceId: event.deviceId);
             print("good to go");
+            setState(() {
+              loader = false;
+              search = true;
+            });
+
+            print(_connection);
             String nm = devName.toString();
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => DataPage(name: nm, id: deviceIde)));
+                builder: (context) => DataPage(
+                      name: nm,
+                      id: deviceIde,
+                      streaming: _connection,
+                    )));
             final characteristic = QualifiedCharacteristic(
                 serviceId: serviceUuid,
                 characteristicId: characteristicUuid,
@@ -135,6 +148,10 @@ class _HomePageState extends State<HomePage> {
         case DeviceConnectionState.disconnected:
           {
             print("not good to go");
+            setState(() {
+              loader = false;
+              search = true;
+            });
             break;
           }
         default:
@@ -146,6 +163,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: const Text(
           "Diagnostic App",
@@ -154,50 +172,61 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: Container(
-        child: (_foundDeviceWaitingToConnect && devicesList.length > 0)
-            ? ListView.builder(
-                itemCount: devicesList.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      title: Text(devicesList[index].name),
-                      subtitle: Text(devicesList[index].id),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        _connectToDevice(
-                            devicesList[index].id, devicesList[index].name);
-                      },
-                    ),
-                  );
-                },
-              )
-            : Center(
-                child: Text(
-                  "No device found",
-                  style: TextStyle(color: Colors.grey),
-                ),
+      body: loader
+          ? Center(
+              child: new CircularProgressIndicator(
+                value: null,
+                strokeWidth: 7.0,
               ),
-      ),
+            )
+          : Container(
+              child: (_foundDeviceWaitingToConnect && devicesList.length > 0)
+                  ? ListView.builder(
+                      itemCount: devicesList.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            title: Text(devicesList[index].name),
+                            subtitle: Text(devicesList[index].id),
+                            trailing: Icon(Icons.arrow_forward_ios),
+                            onTap: () {
+                              setState(() {
+                                loader = true;
+                                search = false;
+                              });
+                              _connectToDevice(devicesList[index].id,
+                                  devicesList[index].name);
+                            },
+                          ),
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Text(
+                        "No device found",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+            ),
       floatingActionButton: Wrap(
         direction: Axis.horizontal,
         children: [
           _scanStarted
               ? Container(
                   margin: const EdgeInsets.all(10),
-                  child: FloatingActionButton(
+                  child: search?FloatingActionButton(
                     backgroundColor: Colors.blue,
                     child: const Icon(Icons.search),
                     onPressed: _startScan,
-                  ),
+                  ):Container(),
                 )
               : Container(
                   margin: const EdgeInsets.all(10),
-                  child: FloatingActionButton(
+                  child: search?FloatingActionButton(
                     backgroundColor: Colors.blue,
                     child: Icon(Icons.search),
                     onPressed: _startScan,
-                  ),
+                  ):Container(),
                 ),
         ],
       ),
