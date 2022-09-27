@@ -1,3 +1,4 @@
+import 'package:ble_project1/pages/device_details.dart';
 import 'package:ble_project1/utils/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
@@ -53,6 +54,42 @@ class _DataPageState extends State<DataPage> {
     Navigator.pushNamed(context, MyRoutes.HomePage);
   }
 
+  void goToUart() {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => DeviceDetails(
+            uartpage1: true,
+            statuspage2: false,
+            flashpage3: false,
+            fullpage4: false)));
+  }
+
+  void goToStatus() {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => DeviceDetails(
+            uartpage1: false,
+            statuspage2: true,
+            flashpage3: false,
+            fullpage4: false)));
+  }
+
+  void goToFlash() {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => DeviceDetails(
+            uartpage1: false,
+            statuspage2: false,
+            flashpage3: true,
+            fullpage4: false)));
+  }
+
+  void goToFullScan() {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => DeviceDetails(
+            uartpage1: false,
+            statuspage2: false,
+            flashpage3: false,
+            fullpage4: true)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,7 +139,6 @@ class _DataPageState extends State<DataPage> {
                         color: Colors.white,
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
-                      
                       width: 50,
                       height: 50,
                       child: const Icon(
@@ -111,13 +147,7 @@ class _DataPageState extends State<DataPage> {
                         color: Colors.blue,
                       ),
                     ),
-                    // leading: CircleAvatar(
-                    //   child: Icon(
-                    //     Icons.search,
-                    //     color: Colors.white,
-                    //   ),
-                    //   backgroundColor: Color(0xFF47b881),
-                    // ),
+                    onTap: goToUart,
                     title: Text(
                       "UART",
                       style:
@@ -152,13 +182,7 @@ class _DataPageState extends State<DataPage> {
                         color: Colors.blue,
                       ),
                     ),
-                    // leading: CircleAvatar(
-                    //   child: Icon(
-                    //     Icons.search,
-                    //     color: Colors.white,
-                    //   ),
-                    //   backgroundColor: Color(0xFF47b881),
-                    // ),
+                    onTap: goToStatus,
                     title: Text(
                       "STATUS",
                       style:
@@ -193,13 +217,7 @@ class _DataPageState extends State<DataPage> {
                         color: Colors.blue,
                       ),
                     ),
-                    // leading: CircleAvatar(
-                    //   child: Icon(
-                    //     Icons.search,
-                    //     color: Colors.white,
-                    //   ),
-                    //   backgroundColor: Color(0xFF47b881),
-                    // ),
+                    onTap: goToFlash,
                     title: Text(
                       "FLASH",
                       style:
@@ -234,13 +252,7 @@ class _DataPageState extends State<DataPage> {
                         color: Colors.blue,
                       ),
                     ),
-                    // leading: CircleAvatar(
-                    //   child: Icon(
-                    //     Icons.search,
-                    //     color: Colors.white,
-                    //   ),
-                    //   backgroundColor: Color(0xFF47b881),
-                    // ),
+                    onTap: goToFullScan,
                     title: Text(
                       "FULL SCAN",
                       style:
