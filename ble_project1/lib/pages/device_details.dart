@@ -20,12 +20,21 @@ class _DeviceDetailsState extends State<DeviceDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF0085ba),
         centerTitle: true,
-        title: Text(widget.uartpage1?"UART":widget.statuspage2?"STATUS":widget.flashpage3?"FLASH":widget.fullpage4?"FULL SCAN":""),
-        
+        title: Text(widget.uartpage1
+            ? "UART"
+            : widget.statuspage2
+                ? "STATUS"
+                : widget.flashpage3
+                    ? "FLASH"
+                    : widget.fullpage4
+                        ? "FULL SCAN"
+                        : ""),
       ),
-      body: Container(),
-      
+      body: Container(
+        child: Text("Khana khalo"),
+      ),
     );
   }
 }

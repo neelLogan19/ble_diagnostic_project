@@ -163,6 +163,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF0085ba),
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: const Text(
@@ -214,19 +215,23 @@ class _HomePageState extends State<HomePage> {
           _scanStarted
               ? Container(
                   margin: const EdgeInsets.all(10),
-                  child: search?FloatingActionButton(
-                    backgroundColor: Colors.blue,
-                    child: const Icon(Icons.search),
-                    onPressed: _startScan,
-                  ):Container(),
+                  child: search
+                      ? FloatingActionButton(
+                          backgroundColor: Color(0xFF0085ba),
+                          child: const Icon(Icons.search),
+                          onPressed: _startScan,
+                        )
+                      : Container(),
                 )
               : Container(
                   margin: const EdgeInsets.all(10),
-                  child: search?FloatingActionButton(
-                    backgroundColor: Colors.blue,
-                    child: Icon(Icons.search),
-                    onPressed: _startScan,
-                  ):Container(),
+                  child: search
+                      ? FloatingActionButton(
+                          backgroundColor: Color(0xFF0085ba),
+                          child: Icon(Icons.search),
+                          onPressed: _startScan,
+                        )
+                      : Container(),
                 ),
         ],
       ),

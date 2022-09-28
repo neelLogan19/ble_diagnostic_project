@@ -25,7 +25,7 @@ class _DataPageState extends State<DataPage> {
   List<String> res = [];
   final Uuid serviceUuid = Uuid.parse("edd79b0f-4ae0-484a-8ba9-4a611f1cb47b");
   final Uuid characteristicUuid =
-      Uuid.parse("d775dbdb-3b38-47be-9734-9ff022ba37ea");
+      Uuid.parse("9cc534f1-a27d-45be-bfd8-e28ddde624cb");
 
   final flutterReactiveBle = FlutterReactiveBle();
   //instance of bluetooth created
@@ -54,7 +54,13 @@ class _DataPageState extends State<DataPage> {
     Navigator.pushNamed(context, MyRoutes.HomePage);
   }
 
-  void goToUart() {
+  void goToUart(urtValue) async {
+    final characteristic = QualifiedCharacteristic(
+        serviceId: serviceUuid,
+        characteristicId: characteristicUuid,
+        deviceId: widget.id);
+    await flutterReactiveBle.writeCharacteristicWithResponse(characteristic,
+        value: urtValue);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => DeviceDetails(
             uartpage1: true,
@@ -63,7 +69,13 @@ class _DataPageState extends State<DataPage> {
             fullpage4: false)));
   }
 
-  void goToStatus() {
+  void goToStatus(statusValue) async {
+    final characteristic = QualifiedCharacteristic(
+        serviceId: serviceUuid,
+        characteristicId: characteristicUuid,
+        deviceId: widget.id);
+    await flutterReactiveBle.writeCharacteristicWithResponse(characteristic,
+        value: statusValue);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => DeviceDetails(
             uartpage1: false,
@@ -72,7 +84,13 @@ class _DataPageState extends State<DataPage> {
             fullpage4: false)));
   }
 
-  void goToFlash() {
+  void goToFlash(flashValue) async {
+    final characteristic = QualifiedCharacteristic(
+        serviceId: serviceUuid,
+        characteristicId: characteristicUuid,
+        deviceId: widget.id);
+    await flutterReactiveBle.writeCharacteristicWithResponse(characteristic,
+        value: flashValue);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => DeviceDetails(
             uartpage1: false,
@@ -81,7 +99,13 @@ class _DataPageState extends State<DataPage> {
             fullpage4: false)));
   }
 
-  void goToFullScan() {
+  void goToFullScan(fullScanValue) async {
+    final characteristic = QualifiedCharacteristic(
+        serviceId: serviceUuid,
+        characteristicId: characteristicUuid,
+        deviceId: widget.id);
+    await flutterReactiveBle.writeCharacteristicWithResponse(characteristic,
+        value: fullScanValue);
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => DeviceDetails(
             uartpage1: false,
@@ -94,16 +118,17 @@ class _DataPageState extends State<DataPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF0085ba),
         automaticallyImplyLeading: false,
         title: Text('${widget.name}'),
         actions: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(12.0),
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.rectangle,
                 borderRadius: BorderRadius.circular(4),
-                color: Color.fromARGB(187, 238, 238, 238),
+                color: Colors.white,
               ),
               child: TextButton(
                 style: TextButton.styleFrom(
@@ -120,150 +145,161 @@ class _DataPageState extends State<DataPage> {
           ),
         ],
       ),
-
       body: Padding(
         padding: EdgeInsets.all(7.5),
         child: ListView(
           children: [
-            Card(
-              child: Container(
-                decoration: BoxDecoration(
+            Container(
+              margin: EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
                   color: Color(0xFFDFE4EA),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                height: 100,
-                child: Center(
-                  child: ListTile(
-                    leading: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      width: 50,
-                      height: 50,
-                      child: const Icon(
-                        Icons.search,
-                        size: 40,
-                        color: Colors.blue,
-                      ),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 4,
+                        offset: Offset(0, 0))
+                  ]),
+              height: 100,
+              child: Center(
+                child: ListTile(
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    onTap: goToUart,
-                    title: Text(
-                      "UART",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    width: 50,
+                    height: 50,
+                    child: const Icon(
+                      Icons.search,
+                      size: 40,
+                      color: Color(0xFF0085ba),
                     ),
+                  ),
+                  onTap: () {
+                    var uartCmd = utf8.encode("BLE_URT");
+                    goToUart(uartCmd);
+                  },
+                  title: Text(
+                    "UART",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
             ),
-            Card(
-              child: Container(
-                decoration: BoxDecoration(
+            Container(
+              margin: EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
                   color: Color(0xFFDFE4EA),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                height: 100,
-                child: Center(
-                  child: ListTile(
-                    leading: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      width: 50,
-                      height: 50,
-                      child: const Icon(
-                        Icons.search,
-                        size: 40,
-                        color: Colors.blue,
-                      ),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 4,
+                        offset: Offset(0, 0))
+                  ]),
+              height: 100,
+              child: Center(
+                child: ListTile(
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    onTap: goToStatus,
-                    title: Text(
-                      "STATUS",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    width: 50,
+                    height: 50,
+                    child: const Icon(
+                      Icons.search,
+                      size: 40,
+                      color: Color(0xFF0085ba),
                     ),
+                  ),
+                  onTap: () {
+                    var statusCmd = utf8.encode("BLE_SNS");
+                    goToStatus(statusCmd);
+                  },
+                  title: Text(
+                    "STATUS",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
             ),
-            Card(
-              child: Container(
-                decoration: BoxDecoration(
+            Container(
+              margin: EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
                   color: Color(0xFFDFE4EA),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                height: 100,
-                child: Center(
-                  child: ListTile(
-                    leading: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      width: 50,
-                      height: 50,
-                      child: const Icon(
-                        Icons.search,
-                        size: 40,
-                        color: Colors.blue,
-                      ),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 4,
+                        offset: Offset(0, 0))
+                  ]),
+              height: 100,
+              child: Center(
+                child: ListTile(
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    onTap: goToFlash,
-                    title: Text(
-                      "FLASH",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    width: 50,
+                    height: 50,
+                    child: const Icon(
+                      Icons.search,
+                      size: 40,
+                      color: Color(0xFF0085ba),
                     ),
+                  ),
+                  onTap: () {
+                    var flashCmd = utf8.encode("BLE_FLS");
+                    goToStatus(flashCmd);
+                  },
+                  title: Text(
+                    "FLASH",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
             ),
-            Card(
-              child: Container(
-                decoration: BoxDecoration(
+            Container(
+              margin: EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
                   color: Color(0xFFDFE4EA),
                   borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                height: 100,
-                child: Center(
-                  child: ListTile(
-                    leading: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      width: 50,
-                      height: 50,
-                      child: const Icon(
-                        Icons.search,
-                        size: 40,
-                        color: Colors.blue,
-                      ),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 4,
+                        offset: Offset(0, 0))
+                  ]),
+              height: 100,
+              child: Center(
+                child: ListTile(
+                  leading: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    onTap: goToFullScan,
-                    title: Text(
-                      "FULL SCAN",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    width: 50,
+                    height: 50,
+                    child: const Icon(
+                      Icons.search,
+                      size: 40,
+                      color: Color(0xFF0085ba),
                     ),
+                  ),
+                  onTap: () {
+                    var fullScanCmd = utf8.encode("BLE_FDN");
+                    goToStatus(fullScanCmd);
+                  },
+                  title: Text(
+                    "FULL SCAN",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
             ),
           ],
         ),
